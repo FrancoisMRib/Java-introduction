@@ -1,20 +1,17 @@
-package com.cda4.classe;
+package com.cda4.classe2;
 
 public class Personnage {
-
-    private String nom;
+    private String nom ;
     private int vie;
     private int attaque;
     private int defense;
 
-    public Personnage(){};
-
-    public Personnage(String nom, int vie, int attaque, int defense) {
-        this.nom = nom ;
-        this.vie = vie ;
-        this.attaque = attaque ;
-        this.defense = defense ;
-    }
+    public Personnage(String nom, int vie, int attaque, int defense){
+        this.nom = nom;
+        this.vie = vie;
+        this.attaque = attaque;
+        this.defense = defense;
+    };
 
     public String getNom() {
         return nom;
@@ -48,7 +45,5 @@ public class Personnage {
         this.defense = defense;
     }
 
-    public void attaquer(Personnage cible) {
-        cible.vie = cible.vie - (this.attaque - cible.defense);
-    }
+
 }
