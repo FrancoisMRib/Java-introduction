@@ -1,4 +1,6 @@
 import com.testcda3.classe.Utilisateur;
+import com.testcda3.classe.Habitation;
+import com.testcda3.classe.Vehicule;
 
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -12,11 +14,40 @@ public class Main {
 //        System.out.println(lookmaxTab());
 //        moyenTab();
 //        tabUserMoy();
-        tabUserMoyV2();
+//        tabUserMoyV2();
+        //EXERCICE 25
+//        Habitation premHab = new Habitation();
+//        Habitation villa = new Habitation("villa", 15, 78,3);
+//        Habitation nouvHab = new Habitation("maison", 120, 160,2);
+//
+//        Utilisateur francois = new Utilisateur("Ribere", "François", "fribere@gmail.com", "1234");
+//        System.out.println("L'habitation qui se nomme " + villa.getName() + " a une surface de " + villa.toSurface() + "m2");
+//        System.out.println("L'habitation qui se nomme " + nouvHab.getName() + " a une surface de " + nouvHab.toSurface() + "m2");
+//        System.out.println(villa.phrase());
 
-        Utilisateur francois = new Utilisateur("Ribere", "François", "fribere@gmail.com", "1234")
+        //EXERCICE 26
+        Vehicule premVeh = new Vehicule();
+        Vehicule mob = new Vehicule("Peugeot 101", 2, 150);
+        Vehicule car = new Vehicule("Peugeot 106", 4, 210);
+        Vehicule bagn = new Vehicule("Citroën Jumpy", 6, 220);
+        System.out.println("Le véhicule " + mob.getNom() + " est de type " + mob.detect());
+        System.out.println("Le véhicule " + car.getNom() + " est de type " + car.detect());
+        System.out.println("Le véhicule " + bagn.getNom() + " est de type " + bagn.detect());
+
+        System.out.println("Le véhicule " + mob.getNom() + " a une vitesse de " + mob.getVitesse());
+        mob.boost();
+        System.out.println("Le véhicule " + mob.getNom() + " a une nouvelle vitesse de " + mob.getVitesse());
+
+        //test de la méthode plusRapide
+        System.out.println("Le véhicule le plus rapide est : " + mob.plusRapide(car));
+        System.out.println("Le véhicule le plus rapide est : " + car.plusRapide(bagn));
+        System.out.println("Le véhicule le plus rapide est : " + car.plusRapide(mob));
+
 
     }
+
+
+
 
     public static String nombreDemande() {
         Scanner scanner = new Scanner(System.in);
