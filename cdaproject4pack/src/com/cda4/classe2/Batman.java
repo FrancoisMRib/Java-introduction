@@ -6,10 +6,11 @@ public class Batman extends Personnage implements Competence {
             super(nom, vie, attaque, defense);
     }
 
-    //méthoide redéfinie
+    //méthode redéfinie
+    @Override
     public void attaquer(Personnage objet) {
-        if(this.setAttaque()-objet.getDefense() > 0) {
-            objet.setVie(this.getAttaque()-objet.getDefense()) ;
+        if(this.getAttaque()-objet.getDefense() >0) {
+            objet.setVie(this.getAttaque()-objet.getDefense());
         }
     }
 }
