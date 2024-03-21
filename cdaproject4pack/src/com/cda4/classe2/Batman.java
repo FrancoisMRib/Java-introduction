@@ -7,7 +7,9 @@ public class Batman extends Personnage implements Competence {
     }
 
     //méthoide redéfinie
-    public void attaquer() {
-        System.out.println("Attaque !");
+    public void attaquer(Personnage objet) {
+        if(this.setAttaque()-objet.getDefense() > 0) {
+            objet.setVie(this.getAttaque()-objet.getDefense()) ;
+        }
     }
 }

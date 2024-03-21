@@ -45,5 +45,11 @@ public class Personnage {
         this.defense = defense;
     }
 
+    public void attaquer(Personnage personnage) {
+        if((this.attaque - personnage.defense) > 0) {
+            personnage.vie -= (this.attaque - personnage.defense);
+        }
+    }
+
 
 }
