@@ -18,7 +18,7 @@ public class Main {
 //        Utilisateur user = new Utilisateur("arton", "jacques", "fl@test.com", "1989");
 
 //        System.out.println(ManagerUtilisateur.update(user));
-        UserForm formulaire = new UserForm(null);
+        UserForm userForm = new UserForm(null);
     }
 
     //update de l'Utilisateur

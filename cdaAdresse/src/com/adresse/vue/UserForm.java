@@ -11,8 +11,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import com.adresse.model.Utilisateur;
+
+import java.sql.SQLException;
 import java.util.Locale;
 
+import static com.adresse.env.Regex.REGEX_MAIL;
+import static com.adresse.env.Regex.REGEX_PASSWORD;
 public class UserForm extends JDialog {
     private JLabel jlName;
     private JTextField tfName;
@@ -31,85 +35,82 @@ public class UserForm extends JDialog {
 
     public UserForm(JDialog parent) {
         super(parent);
-        setTitle("Ajouter un compte utilsateur");
+        setTitle("Ajouter un compte utilisateur");
         setContentPane(jpMain);
         setMaximumSize(new Dimension(800, 600));
         setMinimumSize(new Dimension(800, 600));
         setVisible(true);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        //écouteur événement bt valider
         btValid.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                createUser();
-                create();
+                try {
+                    createUser();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
             }
         });
         btCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                createUser();
+
             }
         });
     }
 
-    public static final String REGEX_MAIL = "^[\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
-    public static final String REGEX_PASSWORD = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{12,}$";
-
-
-
-    public void createUser() {
+    public void createUser() throws SQLException {
         //récupérer le contenu des 5 champs de texte
         String name = tfName.getText();
         String firstname = tfFirstname.getText();
         String email = tfEmail.getText();
         String password = String.valueOf(pfPassword.getPassword());
-        String verifPassword = String.valueOf(pfpasswordVerif.getPassword());
-        //envoyer le contenu des champs en BDD
-        // Utilisateur create = new Utilisateur("Patulacci", "Marcel", "mp@gmail.com", "456")
-        //Utilisateur create();
+        String passwordVerif = String.valueOf(pfpasswordVerif.getPassword());
         //test si les 5 champs sont bien remplis
-        if (!name.isEmpty() && !firstname.isEmpty() && !email.isEmpty()) {
+        if (!name.isEmpty() && !firstname.isEmpty() && !email.isEmpty() && !password.isEmpty() && !passwordVerif.isEmpty()) {
             //test si les passwords correspondent
-            if (password.equals(verifPassword)) {
-                password = BCrypt.hashpw(password, BCrypt.gensalt());
-                Utilisateur user = new Utilisateur(name, firstname,email, password);
-                try {
-                    //test si le compte n'existe pas
-                    if(ManagerUtilisateur.create(user)).getId() == 0) {
-    //ajouter le compte
-                        ManagerUtilisateur.create(user);
-                        //afficher le message du compte ajouté
-                        JOptionPane.showMessageDialog(null,
-                                "le compte a bien été ajouté en BDD",
-                                "Valide",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    }
-                    //test si le comtep existe
-                    else {
-                        JOptionPane.showMessageDialog(null,
-                                "le compte a bien été ajouté en BDD",
-                                "Valide",
-                               JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-                catch (SQLException e) {
-                    throw new ExecutionControl.RunException()
-                }
-//                if (email == REGEX_MAIL) {
-//                    if (password == REGEX_PASSWORD) {
-//                        Utilisateur user = new Utilisateur(name, firstname, email, password);
-//                        JOptionPane.showMessageDialog(null,
-//                                "le compte a bien été ajouté en BDD",
-//                                "Valide",
-//                                JOptionPane.INFORMATION_MESSAGE);
-//                    } else {
-//                        return "Le password n'est pas valide";
-//                } else {
-//                    return "Le mail n'est pas valide";
-//                }
+            if (password.equals(passwordVerif)) {
 
+                //test si le password n'est pas valide (match pas le regex)
+                if (!password.matches(REGEX_PASSWORD)) {
+                    JOptionPane.showMessageDialog(null,
+                            "Le mot de passe est invalide",
+                            "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
+                //test si le mail n'est pas valide (match pas le regex)
+                if (!email.matches(REGEX_MAIL)) {
+                    JOptionPane.showMessageDialog(null,
+                            "Le mail est invalide",
+                            "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                //hash du mot de passe
+                password = BCrypt.hashpw(password, BCrypt.gensalt());
+                //création d'un objet Utilisateur
+                Utilisateur user = new Utilisateur(name, firstname, email, password);
+
+                //test si le compte n'existe pas
+                if (ManagerUtilisateur.findByMail(user).getId() == 0) {
+                    //ajouter le compte
+                    ManagerUtilisateur.create(user);
+                    //afficher le message compte à bien été ajouté
+                    JOptionPane.showMessageDialog(null,
+                            "le compte a été ajouté",
+                            "Valide",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                //test si le compte existe
+                else {
+                    JOptionPane.showMessageDialog(null,
+                            "le existe déja",
+                            "Valide",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+
             } else {
                 JOptionPane.showMessageDialog(null,
                         "Les mots de passe ne correspondent pas",
@@ -139,6 +140,89 @@ public class UserForm extends JDialog {
         dispose();
     }
 }
+
+
+//    public void createUser() {
+//        //récupérer le contenu des 5 champs de texte
+//        String name = tfName.getText();
+//        String firstname = tfFirstname.getText();
+//        String email = tfEmail.getText();
+//        String password = String.valueOf(pfPassword.getPassword());
+//        String verifPassword = String.valueOf(pfpasswordVerif.getPassword());
+//        //envoyer le contenu des champs en BDD
+//        // Utilisateur create = new Utilisateur("Patulacci", "Marcel", "mp@gmail.com", "456")
+//        //Utilisateur create();
+//        //test si les 5 champs sont bien remplis
+//        if (!name.isEmpty() && !firstname.isEmpty() && !email.isEmpty()) {
+//            //test si les passwords correspondent
+//            if (password.equals(verifPassword)) {
+//                password = BCrypt.hashpw(password, BCrypt.gensalt());
+//                Utilisateur user = new Utilisateur(name, firstname,email, password);
+//                try {
+//                    //test si le compte n'existe pas
+//                    if(ManagerUtilisateur.create(user)).getId() == 0) {
+//    //ajouter le compte
+//                        ManagerUtilisateur.create(user);
+//                        //afficher le message du compte ajouté
+//                        JOptionPane.showMessageDialog(null,
+//                                "le compte a bien été ajouté en BDD",
+//                                "Valide",
+//                                JOptionPane.INFORMATION_MESSAGE);
+//                    }
+//                    //test si le comtep existe
+//                    else {
+//                        JOptionPane.showMessageDialog(null,
+//                                "le compte a bien été ajouté en BDD",
+//                                "Valide",
+//                               JOptionPane.ERROR_MESSAGE);
+//                    }
+//                }
+//                catch (SQLException e) {
+//                    throw new ExecutionControl.RunException()
+//                }
+////                if (email == REGEX_MAIL) {
+////                    if (password == REGEX_PASSWORD) {
+////                        Utilisateur user = new Utilisateur(name, firstname, email, password);
+////                        JOptionPane.showMessageDialog(null,
+////                                "le compte a bien été ajouté en BDD",
+////                                "Valide",
+////                                JOptionPane.INFORMATION_MESSAGE);
+////                    } else {
+////                        return "Le password n'est pas valide";
+////                } else {
+////                    return "Le mail n'est pas valide";
+////                }
+//
+//                }
+//            } else {
+//                JOptionPane.showMessageDialog(null,
+//                        "Les mots de passe ne correspondent pas",
+//                        "Erreur",
+//                        JOptionPane.ERROR_MESSAGE);
+//            }
+//        } else {
+//            JOptionPane.showMessageDialog(null,
+//                    "Veuillez remplir tous les champs du formulaire",
+//                    "Erreur",
+//                    JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
+
+//    public void cancelUser() {
+//        //vider les champs
+//        tfName.setText("");
+//        tfFirstname.setText("");
+//        tfEmail.setText("");
+//        pfPassword.setText("");
+//        pfpasswordVerif.setText("");
+//        //afficher un message pour indiquer que les champs sont vidés
+//        JOptionPane.showMessageDialog(null,
+//                "Formulaire reset",
+//                "Reset",
+//                JOptionPane.INFORMATION_MESSAGE);
+//        dispose();
+//    }
+//}
 
 //        public void createUser() {
 //            String name = tfName.getText();
