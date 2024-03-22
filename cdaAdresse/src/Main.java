@@ -13,11 +13,11 @@ import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        Utilisateur user = new Utilisateur("arton", "jacques", "fl@test.com", "1989");
+//        Utilisateur user = new Utilisateur("arton", "jacques", "fl@test.com", "1989");
 //        System.out.println(ManagerUtilisateur.create(user));
 //        Utilisateur user = new Utilisateur("arton", "jacques", "fl@test.com", "1989");
 
-        System.out.println(ManagerUtilisateur.update(user));
+//        System.out.println(ManagerUtilisateur.update(user));
         UserForm formulaire = new UserForm(null);
     }
 
